@@ -5,7 +5,7 @@ import random as rd
 import discord
 import json
 
-with open("setting.json", "r", encoding="utf8") as jfile:
+with open("config.json", "r", encoding="utf8") as jfile:
     jdata = json.load(jfile)
 
 
@@ -62,30 +62,30 @@ class EndParty(Button):
 
         # 平分玩家到兩個語音頻道
         half = len(players) // 2
-        team_one = players[:half]
-        team_two = players[half:]
+        attacker = players[:half]
+        defender = players[half:]
 
         # 假設你已經有兩個語音頻道的 ID
-        channel_id_one = int(jdata["ATTACKER_CHANNEL"])
-        channel_id_two = int(jdata["DEFENDER_CHANNEL"])
+        attacker_channel = int(jdata["ATTACKER_CHANNEL"])
+        defender_channel = int(jdata["DEFENDER_CHANNEL"])
 
         guild = interaction.guild
-        for index, user_id in enumerate(team_one):
+        for index, user_id in enumerate(attacker):
             member = guild.get_member(user_id)
             if member:
                 try:
                     await member.move_to(
-                        discord.utils.get(guild.voice_channels, id=channel_id_one)
+                        discord.utils.get(guild.voice_channels, id=attacker_channel)
                     )
                 except discord.HTTPException as e:
                     print(f"無法移動 {member.name}: {e}")
 
-        for index, user_id in enumerate(team_two):
+        for index, user_id in enumerate(defender):
             member = guild.get_member(user_id)
             if member:
                 try:
                     await member.move_to(
-                        discord.utils.get(guild.voice_channels, id=channel_id_two)
+                        discord.utils.get(guild.voice_channels, id=defender_channel)
                     )
                 except discord.HTTPException as e:
                     print(f"無法移動 {member.name}: {e}")
@@ -100,7 +100,7 @@ class EndParty(Button):
 
 class ButtonCog(Cog_Extension):
 
-    @discord.app_commands.command(name="分隊", description="分隊按鈕")
+    @discord.app_commands.command(name="特戰分隊", description="特戰分隊")
     async def party(self, interaction: discord.Interaction):
         join_button = JoinParty(label="點我加入分隊", style=discord.ButtonStyle.primary)
         end_button = EndParty(

@@ -3,7 +3,7 @@ import json
 from discord.ext import commands
 from core.classes import Cog_Extension
 
-with open("setting.json", "r", encoding="utf8") as jfile:
+with open("config.json", "r", encoding="utf8") as jfile:
     jdata = json.load(jfile)
 
 
@@ -23,6 +23,19 @@ class Event(Cog_Extension):
     async def on_member_remove(self, member):
         leave_channel = self.bot.get_channel(int(jdata["LEAVE_CHANNEL"]))
         await leave_channel.send(f"{member.mention} 滾遠點")
+
+    # listen message
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        monitor = self.bot.get_channel(int(jdata["MONITOR_CHANNEL"]))
+        await monitor.send(
+            f'{before.author} 將 "{before.content}" 修改成 "{after.content}"'
+        )
+
+    @commands.Cog.listener()
+    async def on_message_delete(self, msg):
+        monitor = self.bot.get_channel(int(jdata["MONITOR_CHANNEL"]))
+        await monitor.send(f'{msg.author} 刪除了 "{msg.content}"')
 
     # listen voice channel
     @commands.Cog.listener()
