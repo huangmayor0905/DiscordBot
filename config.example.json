@@ -7,9 +7,7 @@
   "guilds": {
     "welcomeChannelID": "",
     "leaveChannelID": "",
-    "dynamicChannelID": "",
-    "privateChannelID": "",
-    "monitorChannelID": ""
+    "dynamicChannelID": ""
   },
   "valorants": {
     "attackerChannelID": "",
@@ -54,11 +52,5 @@
       "Deadlock"
     ]
   },
-  "teacherSays": [
-    "弱",
-    "沒有用的東西",
-    "上課不可以用電腦",
-    "這樣很不尊重老師",
-    "你們家長同意你們早退我沒有意見"
-  ]
+  "teacherSays": ["弱", "沒有用的東西", "上課不可以用電腦", "這樣很不尊重老師", "你們家長同意你們早退我沒有意見"]
 }
