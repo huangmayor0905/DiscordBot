@@ -18,7 +18,7 @@ with open("config.json", "r", encoding="utf8") as jfile:
     jdata = json.load(jfile)
 
 
-## 開機
+# 開機
 @bot.event
 async def on_ready():
     activity = discord.Activity(type=discord.ActivityType.playing, name="Discord")
@@ -63,21 +63,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
-# https://discord.com/oauth2/authorize?client_id=1211861121678581760&permissions=8&integration_type=0&scope=bot
-
-
-# @bot.command(description="加入語音頻道")
-# async def join(ctx):
-#     channel = ctx.author.voice.channel
-#     await channel.connect()
-#     await ctx.send(f"已加入語音頻道：{ctx.author.voice.channel.name}")
-
-
-# @bot.command(description="離開語音頻道")
-# async def leave(ctx):
-#     voice_client = ctx.guild.voice_client
-#     await voice_client.disconnect()
-#     await ctx.send(f"已離開語音頻道：{ctx.author.voice.channel.name}")
-
-# bot.run(jdata["DISCORD_TOKEN"])  # 運行機器人
