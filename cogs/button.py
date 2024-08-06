@@ -18,17 +18,15 @@ class JoinParty(Button):
         user_id = interaction.user.id
         if user_id in self.player:
             # 如果用戶已經按過按鈕，給予回應並不再進行後續操作
-            await interaction.response.send_message(
-                "您已經按過按鈕了！", ephemeral=True
-            )
+            await interaction.response.send_message("你按過了！", ephemeral=True)
         else:
             # 在這裡記錄按下按鈕的用戶
             print(f"{interaction.user} 按下了按鈕")
             self.player.append(user_id)  # 使用 append 方法加入 list
-            print(self.player)
+            # print(self.player)
             # 給予用戶回應，確認他們的操作
             await interaction.response.send_message(
-                "您已成功按下按鈕！", ephemeral=True
+                "成功加入分隊系統！", ephemeral=True
             )
 
             # 更新按鈕狀態
@@ -66,8 +64,8 @@ class EndParty(Button):
         defender = players[half:]
 
         # 假設你已經有兩個語音頻道的 ID
-        attacker_channel = int(jdata["ATTACKER_CHANNEL"])
-        defender_channel = int(jdata["DEFENDER_CHANNEL"])
+        attacker_channel = int(jdata["valorants"]["attackerChannelID"])
+        defender_channel = int(jdata["valorants"]["defenderChannelID"])
 
         guild = interaction.guild
         for index, user_id in enumerate(attacker):
@@ -96,6 +94,8 @@ class EndParty(Button):
 
         # 清空 player 列表
         self.view.children[0].player.clear()
+        # 刪除訊息
+        await interaction.message.delete()
 
 
 class ButtonCog(Cog_Extension):
