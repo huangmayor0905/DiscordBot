@@ -28,8 +28,8 @@ class EarthquakeReport(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.earthquake_warning.start()
-        self.eq_channel_id = 1269606076291092480
-        self.eq_report_role_id = 1269980566661632103
+        self.eq_channel_id = int(jdata["guilds"]["eqReportChannelID"])
+        self.eq_report_role_id = int(jdata["roles"]["eqReportID"])
         self.cwa_api_key = str(jdata["CWA_API_KEY"])
 
     def cog_unload(self):
