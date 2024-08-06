@@ -58,7 +58,7 @@ async def load_extension():
 async def main():
     async with bot:
         await load_extension()
-        await bot.start(jdata["DISCORD_TOKEN"])
+        await bot.start(jdata["botToken"])
 
 
 if __name__ == "__main__":
