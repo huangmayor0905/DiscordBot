@@ -18,7 +18,7 @@ Python `3.12.4`
 ### 安裝必要套件
 
 ```shell
-pip install requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 配置 config.json
