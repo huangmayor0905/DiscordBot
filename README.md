@@ -2,7 +2,26 @@
 
 My Discord Bot with Python.
 
-# 配置 Config.json
+## 運行版本
+
+Python `3.12.4`
+
+| Package    | Version |
+| ---------- | ------- |
+| discord.py | 2.4.0   |
+| requests   | 2.32.3  |
+
+## 使用方法
+
+### 請先確保電腦擁有 Python 環境
+
+### 安裝必要套件
+
+```shell
+pip install requirements.txt
+```
+
+### 配置 config.json
 
 - `botToken` 你的機器人 Token
 - `CWA_API_KEY` 你的中央氣象署 API_KEY
