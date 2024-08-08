@@ -4,6 +4,7 @@ from discord import app_commands
 import discord
 import json
 import random as rd
+from datetime import datetime
 
 with open("config.json", "r", encoding="utf8") as jfile:
     jdata = json.load(jfile)
@@ -52,6 +53,11 @@ class Main(Cog_Extension):
                 await member.move_to(channel1)
             else:
                 await member.move_to(channel2)
+    
+    @commands.command(name="時間戳")
+    async def timestamp(self, ctx):
+        # 轉換成 UTC+8 的時間戳
+        await ctx.send(f"<t:{int(datetime.now().timestamp())}:R>")
 
 
 async def setup(bot):
