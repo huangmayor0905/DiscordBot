@@ -20,13 +20,8 @@ Python `3.12.4`
   pip install -r requirements.txt
   ```
 
+
 - 配置 config.json
-
-> [!NOTE]
-> ID 找不到？
-> 請至【Discord 設定】 -> 側邊欄【進階】 -> 打開【開發者模式】</br>
-> 接著右鍵點擊語音或文字頻道，就可以看到【複製頻道 ID】
-
   - `botToken` 你的機器人 Token
   - `CWA_API_KEY` 你的中央氣象署 API_KEY
   - `roles` 身分組頻道設定
@@ -42,5 +37,9 @@ Python `3.12.4`
     - `agents` 角色
   - `teacherSays` 我高中老師的語錄：）
 
+> [!NOTE]
+> ID 找不到？
+> 請至【Discord 設定】 -> 側邊欄【進階】 -> 打開【開發者模式】</br>
+> 接著右鍵點擊語音或文字頻道，就可以看到【複製頻道 ID】
 
 - 若欲使用前綴指令，預設前綴字符為 `=`
