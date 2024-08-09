@@ -173,6 +173,7 @@ class EarthquakeReport(commands.Cog):
 
         self.eq_No = str(self.eq_data["records"]["Earthquake"][0]["EarthquakeNo"])
         self.eq_Time = str(self.eq_data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"])
+        self.eq_Timestamp = time_to_stamp(self.eq_Time)  # float
         self.eq_MaxIntensity, self.eq_MaxIntensity_suffix = self.get_max_intensity()  # int, str
         self.eq_Intensity_color = intensity_to_color(self.eq_MaxIntensity, self.eq_MaxIntensity_suffix)
         self.eq_ReportImage = self.eq_data["records"]["Earthquake"][0]["ReportImageURI"]
@@ -193,7 +194,7 @@ class EarthquakeReport(commands.Cog):
 
         try:
             # embed message
-            embed = self.make_embed(self.eq_data)
+            embed = self.make_embed()
             # send message if last message is None or the time is different
             # if (last_message_embed is None or last_message_embed.fields[1].value[:19] != eqTime):
             # 如果是顯著有感地震，就 @地震報告，否則不 @
@@ -209,7 +210,9 @@ class EarthquakeReport(commands.Cog):
 
     @earthquake_warning.before_loop
     async def before_earthquake_warning(self):
+        logger.info("Waiting for bot to be ready...")
         await self.bot.wait_until_ready()
+        logger.info("Bot is ready. Starting earthquake warning loop...")
 
     @earthquake_warning.after_loop
     async def after_earthquake_warning(self):
