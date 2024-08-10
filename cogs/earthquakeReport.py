@@ -1,6 +1,7 @@
 from discord.ext import commands, tasks
 from logging.handlers import RotatingFileHandler
 from datetime import datetime, timedelta, timezone
+from discord import app_commands
 import asyncio
 import discord
 import json
@@ -59,10 +60,13 @@ class EarthquakeReport(commands.Cog):
         self.eq_report_role_id = int(jdata["roles"]["eqReportID"])
         self.cwa_api_key = str(jdata["CWA_API_KEY"])
         self.iconURL = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqn2zzgCgO91yRfyCEbvCOZmR8OZzOhOe-1w&s"
+        self.max_retries = 3
+        self.retry_delay = 5  # 秒
 
         self.last_eq_No_Time = self._load_last_message()
         self.eq_data = self.get_eq_data()
 
+        # Initialize earthquake data
         self.eq_No = str(self.eq_data["records"]["Earthquake"][0]["EarthquakeNo"])
         self.eq_Time = str(self.eq_data["records"]["Earthquake"][0]["EarthquakeInfo"]["OriginTime"])
         self.eq_Timestamp = time_to_stamp(self.eq_Time)  # float
@@ -126,24 +130,35 @@ class EarthquakeReport(commands.Cog):
             logger.error(f"Error processing earthquake data: missing key {e}")
             return None
 
+    def fetch_data_with_retry(self, url):
+        retries = 0
+        while retries < self.max_retries:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                return response.json()
+            except requests.RequestException as e:
+                logger.error(f"Error fetching earthquake data (retry {retries+1}): {e}")
+                retries += 1
+                time.sleep(self.retry_delay)
+        
+        logger.error("Failed to fetch earthquake data after retries.")
+        return None
+
+
     def get_eq_data(self):
+        # https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0015-001?Authorization=CWA-A9240309-46AD-4C33-9E1F-8F577BE9E831&limit=1&format=JSON&AreaName=
+        # https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization=CWA-A9240309-46AD-4C33-9E1F-8F577BE9E831&limit=1&format=JSON&AreaName=
         # 顯著有感地震報告
         bigEQurl = f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0015-001?Authorization={self.cwa_api_key}&limit=1&format=JSON&AreaName="
-        try:
-            response = requests.get(bigEQurl)
-            response.raise_for_status()
-            bigEQdata = response.json()
-        except requests.RequestException as e:
-            logger.error(f"Error fetching big earthquake data: {e}")
-            return
+        bigEQdata = self.fetch_data_with_retry(bigEQurl)
+        if bigEQdata is None:
+            return  # Handle the error or exit gracefully
+
         # 小區域有感地震報告
         smallEQurl = f"https://opendata.cwa.gov.tw/api/v1/rest/datastore/E-A0016-001?Authorization={self.cwa_api_key}&limit=1&format=JSON&AreaName="
-        try:
-            response = requests.get(smallEQurl)
-            response.raise_for_status()
-            smallEQdata = response.json()
-        except requests.RequestException as e:
-            logger.error(f"Error fetching small earthquake data: {e}")
+        smallEQdata = self.fetch_data_with_retry(smallEQurl)
+        if smallEQdata is None:
             return
 
         try:
@@ -160,9 +175,25 @@ class EarthquakeReport(commands.Cog):
 
         return eqdata
 
-    @commands.command(name="test_eq_report")
-    async def test_eq_report(self, ctx):
-        await ctx.send(embed=self.make_embed(), content="以下是測試地震報告")
+    # Set up eq report channel
+    @app_commands.command(name="設置地震報告頻道", description="設置地震報告頻道")
+    async def set_eq_channel(self, interaction: discord.Interaction, channel: discord.TextChannel):
+        # 僅有能管理頻道的人員可以設定
+        if not interaction.user.guild_permissions.manage_channels:
+            await interaction.response.send_message("你沒有權限設定地震報告頻道", ephemeral=True)
+            return
+
+        self.eq_channel_id = channel.id
+        # Save to config
+        with open("config.json", "w") as jfile:
+            jdata["guilds"]["eqReportChannelID"] = str(self.eq_channel_id)
+            json.dump(jdata, jfile, indent=2, ensure_ascii=False)
+        await interaction.response.send_message(f"地震報告頻道已設定為 {channel.mention}")
+
+    # For testing
+    @app_commands.command(name="測試地震報告", description="測試地震報告")
+    async def test_eq_report(self, interaction: discord.Interaction):
+        await interaction.response.send_message(embed=self.make_embed(), content="以下是測試地震報告")
 
     @tasks.loop(minutes=1)
     async def earthquake_warning(self):
@@ -182,7 +213,7 @@ class EarthquakeReport(commands.Cog):
         self.eq_Epicenter = self.eq_data["records"]["Earthquake"][0]["EarthquakeInfo"]["Epicenter"]["Location"]
         self.eq_Mag = self.eq_data["records"]["Earthquake"][0]["EarthquakeInfo"]["EarthquakeMagnitude"]["MagnitudeValue"]
 
-        # Check if the earthquake data is the same as the last processed one
+        # Check if new earthquake data
         try:
             eq_identifier = f"{self.eq_No}_{self.eq_Time}"
             if self.last_eq_No_Time == eq_identifier:
