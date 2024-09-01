@@ -6,20 +6,20 @@ My Discord Bot with Python.
 
 Python `3.12.4`
 
-| Package    | Version |
-| ---------- | ------- |
-| discord.py | 2.4.0   |
-| requests   | 2.32.3  |
+| Package    | Version  |
+| ---------- | -------- |
+| discord.py | 2.4.0    |
+| requests   | 2.32.3   |
+| yt_dlp     | 2024.8.6 |
 
 ## 使用方法
 
 - 請先確保電腦擁有 Python 環境
-
+- 請確保主機已安裝 FFmpeg
 - 安裝必要套件
   ```shell
   pip install -r requirements.txt
   ```
-
 
 - 配置 config.json
   - `botToken` 你的機器人 Token
