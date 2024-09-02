@@ -14,8 +14,7 @@ Python `3.12.4`
 
 ## 使用方法
 
-- 請先確保電腦擁有 Python 環境
-- 請確保主機已安裝 FFmpeg
+- 請先確保電腦已安裝 [Python](https://www.python.org) 環境和 [FFmpeg](https://www.ffmpeg.org)
 - 安裝必要套件
   ```shell
   pip install -r requirements.txt
